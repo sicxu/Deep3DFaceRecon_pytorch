@@ -131,7 +131,7 @@ Deep3DFaceRecon_pytorch
         |
 	└─── *.txt
 ```
-The \*.jpg/\*.png files are test images. The \*.txt files are detected 5 facial landmarks with a shape of 5x2, and have the same name as the corresponding images. Check [./datasets/exmaples](https://github.com/sicxu/Deep3DFaceRecon_pytorch/tree/main/datasets/examples) for a reference.
+The \*.jpg/\*.png files are test images. The \*.txt files are detected 5 facial landmarks with a shape of 5x2, and have the same name as the corresponding images. Check [./datasets/examples](datasets/examples) for a reference.
 
 Then, run the test script:
 ```
