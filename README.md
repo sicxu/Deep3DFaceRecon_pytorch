@@ -248,5 +248,5 @@ Please cite the following paper if this model helps your research:
 ##
 The face images on this page are from the public [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) dataset released by MMLab, CUHK.
 
-This code is partially borrowed from [CUT](https://github.com/taesungp/contrastive-unpaired-translation).
+Part of the code in this implementation takes [CUT](https://github.com/taesungp/contrastive-unpaired-translation) as a reference.
 
