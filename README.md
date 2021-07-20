@@ -38,7 +38,7 @@ The comparison result with state-of-the-art public 3D face reconstruction method
 | 7. | [PRNet [Feng et al., ECCV 2018]](https://github.com/YadiraF/PRNet) | 1.50 | 1.98 | 1.88 |
 | 8. | [3DMM-CNN [Tran et al., CVPR 2017]](https://github.com/anhttran/3dmm_cnn) | 1.84 | 2.33 | 2.05 |
 
-For more details about the evaluation, check [Now Challenge](https://ringnet.is.tue.mpg.de/challenge) website.
+For more details about the evaluation, check [Now Challenge](https://ringnet.is.tue.mpg.de/challenge.html) website.
 
 ### ● Visual quality
 The pytorch implementation achieves better visual consistency with the input images compare to the original tensorflow version.
