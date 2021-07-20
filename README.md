@@ -230,7 +230,7 @@ By default, the script uses a batchsize of 32 and will train the model with 20 e
 
 To use a trained model, see [Inference](https://github.com/sicxu/Deep3DFaceRecon_pytorch#inference-with-a-pre-trained-model) section.
 ## Contact
-If you have any questions, please contact Yu Deng (t-yudeng@microsoft.com), Jiaolong Yang (jiaoyan@microsoft.com) or Sicheng Xu (sicheng_xu@yeah.net).
+If you have any questions, please contact the paper authors.
 
 ## Citation
 
