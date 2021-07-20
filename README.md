@@ -23,16 +23,16 @@ The pytorch implementation achieves lower shape reconstruction error (9% improve
 
 |Method|FaceWareHouse|MICC Florence     | NoW Challenge |
 |:----:|:-----------:|:-----------:|:-----------:|
-|Deep3D Tensorflow |  1.81±0.50  |  1.67±0.50  | 1.54±1.29 |
-|**Deep3D PyTorch** |**1.64±0.50**|**1.53±0.45**| **1.41±1.21** |
+|Deep3DFace Tensorflow |  1.81±0.50  |  1.67±0.50  | 1.54±1.29 |
+|**Deep3DFace PyTorch** |**1.64±0.50**|**1.53±0.45**| **1.41±1.21** |
 
 The comparison result with state-of-the-art public 3D face reconstruction methods on the NoW face benchmark is as follows:
 |Rank|Method|Median(mm)    | Mean(mm) | Std(mm) |
 |:----:|:-----------:|:-----------:|:-----------:|:-----------:|
 | 1. | [DECA\[Feng et al., SIGGRAPH 2021\]](https://github.com/YadiraF/DECA)|1.09|1.38|1.18|
-| **2.** | **Deep3D PyTorch**|**1.11**|**1.41**|**1.21**|
+| **2.** | **Deep3DFace PyTorch**|**1.11**|**1.41**|**1.21**|
 | 3. | 	[RingNet [Sanyal et al., CVPR 2019]](https://github.com/soubhiksanyal/RingNet) | 1.21 | 1.53 | 1.31 |
-| 4. | [Deep3D [Deng et al., CVPRW 2019]](https://github.com/microsoft/Deep3DFaceReconstruction) | 1.23 | 1.54 | 1.29 |
+| 4. | [Deep3DFace [Deng et al., CVPRW 2019]](https://github.com/microsoft/Deep3DFaceReconstruction) | 1.23 | 1.54 | 1.29 |
 | 5. | [3DDFA-V2 [Guo et al., ECCV 2020]](https://github.com/cleardusk/3DDFA_V2) | 1.23 | 1.57 | 1.39 |
 | 6. | [MGCNet [Shang et al., ECCV 2020]](https://github.com/jiaxiangshang/MGCNet) | 1.31 | 1.87 | 2.63 |
 | 7. | [PRNet [Feng et al., ECCV 2018]](https://github.com/YadiraF/PRNet) | 1.50 | 1.98 | 1.88 |
