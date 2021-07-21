@@ -18,7 +18,7 @@ def get_data_path(root='examples'):
     
     im_path = [os.path.join(root, i) for i in sorted(os.listdir(root)) if i.endswith('png') or i.endswith('jpg')]
     lm_path = [i.replace('png', 'txt').replace('jpg', 'txt') for i in im_path]
-    lm_path = [os.path.join(i.replace(i.split('/')[-1],''),'detections',i.split('/')[-1]) for i in lm_path]
+    lm_path = [os.path.join(i.replace(i.split(os.path.sep)[-1],''),'detections',i.split(os.path.sep)[-1]) for i in lm_path]
 
     return im_path, lm_path
 
@@ -50,7 +50,7 @@ def main(rank, opt, name='examples'):
 
     for i in range(len(im_path)):
         print(i, im_path[i])
-        img_name = im_path[i].split('/')[-1].replace('.png','').replace('.jpg','')
+        img_name = im_path[i].split(os.path.sep)[-1].replace('.png','').replace('.jpg','')
         if not os.path.isfile(lm_path[i]):
             continue
         im_tensor, lm_tensor = read_data(im_path[i], lm_path[i], lm3d_std)
@@ -61,11 +61,11 @@ def main(rank, opt, name='examples'):
         model.set_input(data)  # unpack data from data loader
         model.test()           # run inference
         visuals = model.get_current_visuals()  # get image results
-        visualizer.display_current_results(visuals, 0, opt.epoch, dataset=name.split('/')[-1], 
+        visualizer.display_current_results(visuals, 0, opt.epoch, dataset=name.split(os.path.sep)[-1], 
             save_results=True, count=i, name=img_name, add_image=False)
 
-        model.save_mesh(os.path.join(visualizer.img_dir, name.split('/')[-1], 'epoch_%s_%06d'%(opt.epoch, 0),img_name+'.obj')) # save reconstruction meshes
-        model.save_coeff(os.path.join(visualizer.img_dir, name.split('/')[-1], 'epoch_%s_%06d'%(opt.epoch, 0),img_name+'.mat')) # save predicted coefficients
+        model.save_mesh(os.path.join(visualizer.img_dir, name.split(os.path.sep)[-1], 'epoch_%s_%06d'%(opt.epoch, 0),img_name+'.obj')) # save reconstruction meshes
+        model.save_coeff(os.path.join(visualizer.img_dir, name.split(os.path.sep)[-1], 'epoch_%s_%06d'%(opt.epoch, 0),img_name+'.mat')) # save predicted coefficients
 
 if __name__ == '__main__':
     opt = TestOptions().parse()  # get test options
