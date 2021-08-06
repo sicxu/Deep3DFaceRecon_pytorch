@@ -25,7 +25,7 @@ def draw_landmarks(img, landmark, save_name):
                         img.shape[0] - 1 - landmark[i, 1]+j < img.shape[0] and \
                         landmark[i, 0]+k > 0 and \
                         landmark[i, 0]+k < img.shape[1]:
-                    lm_img[img.shape[0] - landmark[i, 1]+j, landmark[i, 0]+k,
+                    lm_img[img.shape[0] - 1 - landmark[i, 1]+j, landmark[i, 0]+k,
                            :] = np.array([0, 0, 255])
     lm_img = lm_img.astype(np.uint8)
 
