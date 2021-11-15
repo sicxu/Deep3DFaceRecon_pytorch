@@ -90,7 +90,7 @@ pip install .
 ```
 cd ..    # ./Deep3DFaceRecon_pytorch
 git clone https://github.com/deepinsight/insightface.git
-cp -r ./insightface/recognition/arcface_torch/ ./models/
+cp -r ./insightface/recognition/arcface_torch ./models/
 ```
 ## Inference with a pre-trained model
 
