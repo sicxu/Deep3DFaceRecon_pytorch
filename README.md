@@ -149,7 +149,7 @@ Results will be saved into ./checkpoints/<model_name>/results/<folder_to_test_im
 | \*.png | A combination of cropped input image, reconstructed image, and visualization of projected landmarks.
 |:----|:-----------|
 | \*.obj | Reconstructed 3d face mesh with predicted color (texture+illumination) in the world coordinate space. Best viewed in Meshlab. |
-| \*.mat | Predicted 257-dimensional coefficients and 68 projected 2d facial landmarks. Best viewd in Matlab.
+| \*.mat | Predicted 257-dimensional coefficients and 68 projected 2d facial landmarks. Best viewed in Matlab.
 
 ## Training a model from scratch
 ### Prepare prerequisite models
