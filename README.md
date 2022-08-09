@@ -74,7 +74,7 @@ We use an extra high quality face image dataset [FFHQ](https://github.com/NVlabs
 ## Installation
 1. Clone the repository and set up a conda environment with all dependencies as follows:
 ```
-git clone https://github.com/sicxu/Deep3DFaceRecon_pytorch.git --recursive
+git clone https://github.com/sicxu/Deep3DFaceRecon_pytorch.git
 cd Deep3DFaceRecon_pytorch
 conda env create -f environment.yml
 source activate deep3d_pytorch
@@ -82,6 +82,7 @@ source activate deep3d_pytorch
 
 2. Install Nvdiffrast library:
 ```
+git clone https://github.com/NVlabs/nvdiffrast
 cd nvdiffrast    # ./Deep3DFaceRecon_pytorch/nvdiffrast
 pip install .
 ```
