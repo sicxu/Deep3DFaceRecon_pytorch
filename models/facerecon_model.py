@@ -212,7 +212,7 @@ class FaceReconModel(BaseModel):
         recon_color = self.pred_color
         recon_color = recon_color.cpu().numpy()[0]
         tri = self.facemodel.face_buf.cpu().numpy()
-        mesh = trimesh.Trimesh(vertices=recon_shape, faces=tri, vertex_colors=np.clip(255. * recon_color, 0, 255).astype(np.uint8))
+        mesh = trimesh.Trimesh(vertices=recon_shape, faces=tri, vertex_colors=np.clip(255. * recon_color, 0, 255).astype(np.uint8), process=False)
         mesh.export(name)
 
     def save_coeff(self,name):
