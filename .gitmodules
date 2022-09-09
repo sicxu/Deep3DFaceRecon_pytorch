@@ -1,3 +1,0 @@
-[submodule "nvdiffrast"]
-	path = nvdiffrast
-	url = https://github.com/NVlabs/nvdiffrast.git
