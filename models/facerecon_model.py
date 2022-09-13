@@ -33,7 +33,7 @@ class FaceReconModel(BaseModel):
         parser.add_argument('--camera_d', type=float, default=10.)
         parser.add_argument('--z_near', type=float, default=5.)
         parser.add_argument('--z_far', type=float, default=15.)
-        parser.add_argument('--use_opengl', type=util.str2bool, nargs='?', const=True, default=False, help='use opengl context or not')
+        parser.add_argument('--use_opengl', type=util.str2bool, nargs='?', const=True, default=True, help='use opengl context or not')
 
         if is_train:
             # training parameters
