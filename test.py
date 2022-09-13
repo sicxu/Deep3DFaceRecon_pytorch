@@ -52,6 +52,7 @@ def main(rank, opt, name='examples'):
         print(i, im_path[i])
         img_name = im_path[i].split(os.path.sep)[-1].replace('.png','').replace('.jpg','')
         if not os.path.isfile(lm_path[i]):
+            print("%s is not found !!!"%lm_path[i])
             continue
         im_tensor, lm_tensor = read_data(im_path[i], lm_path[i], lm3d_std)
         data = {

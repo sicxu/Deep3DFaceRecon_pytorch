@@ -23,14 +23,16 @@ class MeshRenderer(nn.Module):
                 rasterize_fov,
                 znear=0.1,
                 zfar=10, 
-                rasterize_size=224):
+                rasterize_size=224,
+                use_opengl=True):
         super(MeshRenderer, self).__init__()
 
         x = np.tan(np.deg2rad(rasterize_fov * 0.5)) * znear
         self.ndc_proj = torch.tensor(ndc_projection(x=x, n=znear, f=zfar)).matmul(
                 torch.diag(torch.tensor([1., -1, -1, 1])))
         self.rasterize_size = rasterize_size
-        self.glctx = None
+        self.use_opengl = use_opengl
+        self.ctx = None
     
     def forward(self, vertex, tri, feat=None):
         """
@@ -54,9 +56,14 @@ class MeshRenderer(nn.Module):
 
 
         vertex_ndc = vertex @ ndc_proj.t()
-        if self.glctx is None:
-            self.glctx = dr.RasterizeGLContext(device=device)
-            print("create glctx on device cuda:%d"%device.index)
+        if self.ctx is None:
+            if self.use_opengl:
+                self.ctx = dr.RasterizeGLContext(device=device)
+                ctx_str = "opengl"
+            else:
+                self.ctx = dr.RasterizeCudaContext(device=device)
+                ctx_str = "cuda"
+            print("create %s ctx on device cuda:%d"%(ctx_str, device.index))
         
         ranges = None
         if isinstance(tri, List) or len(tri.shape) == 3:
@@ -71,7 +78,7 @@ class MeshRenderer(nn.Module):
 
         # for range_mode vetex: [B*N, 4], tri: [B*M, 3], for instance_mode vetex: [B, N, 4], tri: [M, 3]
         tri = tri.type(torch.int32).contiguous()
-        rast_out, _ = dr.rasterize(self.glctx, vertex_ndc.contiguous(), tri, resolution=[rsize, rsize], ranges=ranges)
+        rast_out, _ = dr.rasterize(self.ctx, vertex_ndc.contiguous(), tri, resolution=[rsize, rsize], ranges=ranges)
 
         depth, _ = dr.interpolate(vertex.reshape([-1,4])[...,2].unsqueeze(1).contiguous(), rast_out, tri) 
         depth = depth.permute(0, 3, 1, 2)

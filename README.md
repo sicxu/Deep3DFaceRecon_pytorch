@@ -145,6 +145,7 @@ python test.py --name=<model_name> --epoch=20 --img_folder=<folder_to_test_image
 # get reconstruction results of example images
 python test.py --name=<model_name> --epoch=20 --img_folder=./datasets/examples
 ```
+**_Following [#108](https://github.com/sicxu/Deep3DFaceRecon_pytorch/issues/108), if you don't have OpenGL environment, you can simply add "--use_opengl False" to use CUDA context. Make sure you have updated the nvdiffrast to the latest version._**
 
 Results will be saved into ./checkpoints/<model_name>/results/<folder_to_test_images>, which contain the following files:
 | \*.png | A combination of cropped input image, reconstructed image, and visualization of projected landmarks.
