@@ -40,6 +40,8 @@ The comparison result with state-of-the-art public 3D face reconstruction method
 
 For more details about the evaluation, check [Now Challenge](https://ringnet.is.tue.mpg.de/challenge.html) website.
 
+**_The latest benchmark [REALY](https://www.realy3dface.com/) indicates that our method still has the SOTA performance! You can check their paper and website for more details._**
+
 ### ● Visual quality
 The pytorch implementation achieves better visual consistency with the input images compare to the original tensorflow version.
 
