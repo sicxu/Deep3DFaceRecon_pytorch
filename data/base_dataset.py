@@ -95,8 +95,8 @@ def get_affine_mat(opt, size):
     affine_inv = np.linalg.inv(affine)
     return affine, affine_inv, flip
 
-def apply_img_affine(img, affine_inv, method=Image.BICUBIC):
-    return img.transform(img.size, Image.AFFINE, data=affine_inv.flatten()[:6], resample=Image.BICUBIC)
+def apply_img_affine(img, affine_inv, method=Image.Resampling.BICUBIC):
+    return img.transform(img.size, Image.AFFINE, data=affine_inv.flatten()[:6], resample=Image.Resampling.BICUBIC)
 
 def apply_lm_affine(landmark, affine, flip, size):
     _, h = size
