@@ -6,6 +6,12 @@ import random
 import numpy as np
 import torch.utils.data as data
 from PIL import Image
+try:
+    from PIL.Image import Resampling
+    RESAMPLING_METHOD = Resampling.BICUBIC
+except ImportError:
+    from PIL.Image import BICUBIC
+    RESAMPLING_METHOD = BICUBIC
 import torchvision.transforms as transforms
 from abc import ABC, abstractmethod
 
@@ -95,8 +101,8 @@ def get_affine_mat(opt, size):
     affine_inv = np.linalg.inv(affine)
     return affine, affine_inv, flip
 
-def apply_img_affine(img, affine_inv, method=Image.BICUBIC):
-    return img.transform(img.size, Image.AFFINE, data=affine_inv.flatten()[:6], resample=Image.BICUBIC)
+def apply_img_affine(img, affine_inv, method=RESAMPLING_METHOD):
+    return img.transform(img.size, Image.AFFINE, data=affine_inv.flatten()[:6], resample=RESAMPLING_METHOD)
 
 def apply_lm_affine(landmark, affine, flip, size):
     _, h = size
