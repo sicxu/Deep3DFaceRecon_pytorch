@@ -1,7 +1,7 @@
 ## Accurate 3D Face Reconstruction with Weakly-Supervised Learning: From Single Image to Image Set —— PyTorch implementation ##
 
 <p align="center"> 
-<img src="/images/example.gif">
+<img src="images/example.gif">
 </p>
 
 This is an unofficial official pytorch implementation of the following paper:
@@ -14,6 +14,18 @@ The method enforces a hybrid-level weakly-supervised training for CNN-based 3D f
 For the original tensorflow implementation, check this [repo](https://github.com/microsoft/Deep3DFaceReconstruction).
 
 This implementation is written by S. Xu.
+## 04/25/2023 Update
+We updated a new model to alleviate the "closed eyes" issue in our results. We collected ~2K facial images with closed eyes from the internet and included them in the training data. The updated model has similar reconstruction accuracy as the previous one. Here's the [link (google drive)](https://drive.google.com/drive/folders/1grs8J4vu7gOhEClyKjWU-SNxfonGue5F?usp=share_link) to the new model.
+### ● Reconstruction accuracy
+
+|Method|FaceWareHouse|MICC Florence     
+|:----:|:-----------:|:-----------:|
+|Deep3DFace_PyTorch_20230425|1.60±0.44|1.54±0.49|
+
+### ● Visual quality
+<p align="center"> 
+<img src="images/20230425_compare.png">
+</p>
 
 ## Performance
 
@@ -46,7 +58,7 @@ For more details about the evaluation, check [Now Challenge](https://ringnet.is.
 The pytorch implementation achieves better visual consistency with the input images compare to the original tensorflow version.
 
 <p align="center"> 
-<img src="/images/compare.png">
+<img src="images/compare.png">
 </p>
 
 ### ● Speed
