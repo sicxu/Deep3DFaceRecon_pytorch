@@ -15,7 +15,7 @@ For the original tensorflow implementation, check this [repo](https://github.com
 
 This implementation is written by S. Xu.
 ## 04/25/2023 Update
-We updated a new model to alleviate the "closed eyes" issue in our results. We collected ~2K facial images with closed eyes from the internet and included them in the training data. The updated model has similar reconstruction accuracy as the previous one. Here's the [link (google drive)](https://drive.google.com/drive/folders/1grs8J4vu7gOhEClyKjWU-SNxfonGue5F?usp=share_link) to the new model.
+We updated a new model to improve the results on "closed eye" images. We collected ~2K facial images with closed eyes and included them in the training data. The updated model has similar reconstruction accuracy as the previous one on the benchmarks, but has better results for faces with closed eyes (see below). Here's the [link (google drive)](https://drive.google.com/drive/folders/1grs8J4vu7gOhEClyKjWU-SNxfonGue5F?usp=share_link) to the new model.
 ### ● Reconstruction accuracy
 
 |Method|FaceWareHouse|MICC Florence     
