@@ -83,7 +83,7 @@ Data augmentation is used in the training process which contains random image sh
 We use an extra high quality face image dataset [FFHQ](https://github.com/NVlabs/ffhq-dataset) to increase the diversity of training data.
 
 ## Requirements
-**This implementation is only tested under Ubuntu environment with Nvidia GPUs and CUDA installed.**
+**This implementation is only tested under Ubuntu environment with Nvidia GPUs and CUDA installed.** But it should also work on Windows with proper lib configures.
 
 ## Installation
 1. Clone the repository and set up a conda environment with all dependencies as follows:
