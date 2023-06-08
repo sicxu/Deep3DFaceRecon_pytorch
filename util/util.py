@@ -34,6 +34,7 @@ def copyconf(default_opt, **kwargs):
         setattr(conf, key, kwargs[key])
     return conf
 
+
 def genvalconf(train_opt, **kwargs):
     conf = Namespace(**vars(train_opt))
     attr_dict = train_opt.__dict__
@@ -45,7 +46,8 @@ def genvalconf(train_opt, **kwargs):
         setattr(conf, key, kwargs[key])
 
     return conf
-        
+
+
 def find_class_in_module(target_cls_name, module):
     target_cls_name = target_cls_name.replace('_', '').lower()
     clslib = importlib.import_module(module)
@@ -183,6 +185,7 @@ def correct_resize(t, size, mode=RESAMPLING_METHOD):
         resized.append(resized_t)
     return torch.stack(resized, dim=0).to(device)
 
+
 def draw_landmarks(img, landmark, color='r', step=2):
     """
     Return:
@@ -194,7 +197,7 @@ def draw_landmarks(img, landmark, color='r', step=2):
         landmark         -- numpy.array, (B, 68, 2), y direction is opposite to v direction
         color            -- str, 'r' or 'b' (red or blue)
     """
-    if color =='r':
+    if color == 'r':
         c = np.array([255., 0, 0])
     else:
         c = np.array([0, 0, 255.])

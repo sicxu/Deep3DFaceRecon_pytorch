@@ -45,6 +45,7 @@ def POS(xp, x):
 
     return t, s
 
+
 # bounding box for 68 landmark detection
 def BBRegression(points, params):
 
@@ -70,9 +71,10 @@ def BBRegression(points, params):
     inputs = np.transpose(inputs)
     x = inputs[:, 0] * rms + x_mean
     y = inputs[:, 1] * rms + y_mean
-    w = 224/inputs[:, 2] * rms
+    w = 224 / inputs[:, 2] * rms
     rects = [x, y, w, w]
     return np.array(rects).reshape([4])
+
 
 # utils for landmark detection
 def img_padding(img, box):
@@ -88,18 +90,20 @@ def img_padding(img, box):
         success = False
     return res, bbox, success
 
+
 # utils for landmark detection
 def crop(img, bbox):
     padded_img, padded_bbox, flag = img_padding(img, bbox)
     if flag:
         crop_img = padded_img[padded_bbox[1]: padded_bbox[1] +
-                            padded_bbox[3], padded_bbox[0]: padded_bbox[0] + padded_bbox[2]]
+                              padded_bbox[3], padded_bbox[0]: padded_bbox[0] + padded_bbox[2]]
         crop_img = cv2.resize(crop_img.astype(np.uint8),
-                            (224, 224), interpolation=cv2.INTER_CUBIC)
+                              (224, 224), interpolation=cv2.INTER_CUBIC)
         scale = 224 / padded_bbox[3]
         return crop_img, scale
     else:
         return padded_img, 0
+
 
 # utils for landmark detection
 def scale_trans(img, lm, t, s):
@@ -118,7 +122,7 @@ def scale_trans(img, lm, t, s):
     up = h//2 - 112
     bbox = [left, up, 224, 224]
     cropped_img, scale2 = crop(img, bbox)
-    assert(scale2!=0)
+    assert(scale2 != 0)
     t1 = np.array([bbox[0], bbox[1]])
 
     # back to raw img s * crop + s * t1 + t2
@@ -127,6 +131,7 @@ def scale_trans(img, lm, t, s):
     t2 = np.array([t[0] - imgw/2, t[1] - imgh / 2])
     inv = (scale/scale2, scale * t1 + t2.reshape([2]))
     return cropped_img, inv
+
 
 # utils for landmark detection
 def align_for_lm(img, five_points):
@@ -163,6 +168,7 @@ def resize_n_crop_img(img, lm, t, s, target_size=224., mask=None):
 
     return img, lm, mask
 
+
 # utils for face reconstruction
 def extract_5p(lm):
     lm_idx = np.array([31, 37, 40, 43, 46, 49, 55]) - 1
@@ -170,6 +176,7 @@ def extract_5p(lm):
         lm[lm_idx[[3, 4]], :], 0), lm[lm_idx[5], :], lm[lm_idx[6], :]], axis=0)
     lm5p = lm5p[[1, 2, 0, 3, 4], :]
     return lm5p
+
 
 # utils for face reconstruction
 def align_img(img, lm, lm3D, mask=None, target_size=224., rescale_factor=102.):
@@ -203,6 +210,7 @@ def align_img(img, lm, lm3D, mask=None, target_size=224., rescale_factor=102.):
 
     return trans_params, img_new, lm_new, mask_new
 
+
 # utils for face recognition model
 def estimate_norm(lm_68p, H):
     # from https://github.com/deepinsight/insightface/blob/c61d3cd208a603dfa4a338bd743b320ce3e94730/recognition/common/face_align.py#L68
@@ -226,6 +234,7 @@ def estimate_norm(lm_68p, H):
         M = np.eye(3)
 
     return M[0:2, :]
+
 
 def estimate_norm_torch(lm_68p, H):
     lm_68p_ = lm_68p.detach().cpu().numpy()

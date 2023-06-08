@@ -12,19 +12,21 @@ import nvdiffrast.torch as dr
 from scipy.io import loadmat
 from torch import nn
 
+
 def ndc_projection(x=0.1, n=1.0, f=50.0):
     return np.array([[n/x,    0,            0,              0],
                      [  0, n/-x,            0,              0],
                      [  0,    0, -(f+n)/(f-n), -(2*f*n)/(f-n)],
                      [  0,    0,           -1,              0]]).astype(np.float32)
 
+
 class MeshRenderer(nn.Module):
     def __init__(self,
-                rasterize_fov,
-                znear=0.1,
-                zfar=10, 
-                rasterize_size=224,
-                use_opengl=True):
+                 rasterize_fov,
+                 znear=0.1,
+                 zfar=10,
+                 rasterize_size=224,
+                 use_opengl=True):
         super(MeshRenderer, self).__init__()
 
         x = np.tan(np.deg2rad(rasterize_fov * 0.5)) * znear
@@ -54,7 +56,6 @@ class MeshRenderer(nn.Module):
             vertex = torch.cat([vertex, torch.ones([*vertex.shape[:2], 1]).to(device)], dim=-1)
             vertex[..., 1] = -vertex[..., 1] 
 
-
         vertex_ndc = vertex @ ndc_proj.t()
         if self.ctx is None:
             if self.use_opengl:
@@ -63,7 +64,7 @@ class MeshRenderer(nn.Module):
             else:
                 self.ctx = dr.RasterizeCudaContext(device=device)
                 ctx_str = "cuda"
-            print("create %s ctx on device cuda:%d"%(ctx_str, device.index))
+            print("create %s ctx on device cuda:%d" % (ctx_str, device.index))
         
         ranges = None
         if isinstance(tri, List) or len(tri.shape) == 3:
@@ -80,11 +81,10 @@ class MeshRenderer(nn.Module):
         tri = tri.type(torch.int32).contiguous()
         rast_out, _ = dr.rasterize(self.ctx, vertex_ndc.contiguous(), tri, resolution=[rsize, rsize], ranges=ranges)
 
-        depth, _ = dr.interpolate(vertex.reshape([-1,4])[...,2].unsqueeze(1).contiguous(), rast_out, tri) 
+        depth, _ = dr.interpolate(vertex.reshape([-1, 4])[..., 2].unsqueeze(1).contiguous(), rast_out, tri)
         depth = depth.permute(0, 3, 1, 2)
         mask =  (rast_out[..., 3] > 0).float().unsqueeze(1)
         depth = mask * depth
-        
 
         image = None
         if feat is not None:
@@ -93,4 +93,3 @@ class MeshRenderer(nn.Module):
             image = mask * image
         
         return mask, depth, image
-

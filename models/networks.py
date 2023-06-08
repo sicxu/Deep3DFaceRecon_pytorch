@@ -18,10 +18,12 @@ from typing import Type, Any, Callable, Union, List, Optional
 from .arcface_torch.backbones import get_model
 from kornia.geometry import warp_affine
 
+
 def resize_n_crop(image, M, dsize=112):
     # image: (b, c, h, w)
     # M   :  (b, 2, 3)
     return warp_affine(image, M, dsize=(dsize, dsize))
+
 
 def filter_state_dict(state_dict, remove_name='fc'):
     new_state_dict = {}
@@ -30,6 +32,7 @@ def filter_state_dict(state_dict, remove_name='fc'):
             continue
         new_state_dict[key] = state_dict[key]
     return new_state_dict
+
 
 def get_scheduler(optimizer, opt):
     """Return a learning rate scheduler
@@ -61,34 +64,37 @@ def get_scheduler(optimizer, opt):
 def define_net_recon(net_recon, use_last_fc=False, init_path=None):
     return ReconNetWrapper(net_recon, use_last_fc=use_last_fc, init_path=init_path)
 
+
 def define_net_recog(net_recog, pretrained_path=None):
     net = RecogNetWrapper(net_recog=net_recog, pretrained_path=pretrained_path)
     net.eval()
     return net
 
+
 class ReconNetWrapper(nn.Module):
-    fc_dim=257
+    fc_dim = 257
+    
     def __init__(self, net_recon, use_last_fc=False, init_path=None):
         super(ReconNetWrapper, self).__init__()
         self.use_last_fc = use_last_fc
         if net_recon not in func_dict:
-            return  NotImplementedError('network [%s] is not implemented', net_recon)
+            return NotImplementedError('network [%s] is not implemented', net_recon)
         func, last_dim = func_dict[net_recon]
         backbone = func(use_last_fc=use_last_fc, num_classes=self.fc_dim)
         if init_path and os.path.isfile(init_path):
             state_dict = filter_state_dict(torch.load(init_path, map_location='cpu'))
             backbone.load_state_dict(state_dict)
-            print("loading init net_recon %s from %s" %(net_recon, init_path))
+            print("loading init net_recon %s from %s" % (net_recon, init_path))
         self.backbone = backbone
         if not use_last_fc:
             self.final_layers = nn.ModuleList([
-                conv1x1(last_dim, 80, bias=True), # id layer
-                conv1x1(last_dim, 64, bias=True), # exp layer
-                conv1x1(last_dim, 80, bias=True), # tex layer
-                conv1x1(last_dim, 3, bias=True),  # angle layer
-                conv1x1(last_dim, 27, bias=True), # gamma layer
-                conv1x1(last_dim, 2, bias=True),  # tx, ty
-                conv1x1(last_dim, 1, bias=True)   # tz
+                conv1x1(last_dim, 80, bias=True),  # id layer
+                conv1x1(last_dim, 64, bias=True),  # exp layer
+                conv1x1(last_dim, 80, bias=True),  # tex layer
+                conv1x1(last_dim, 3, bias=True),   # angle layer
+                conv1x1(last_dim, 27, bias=True),  # gamma layer
+                conv1x1(last_dim, 2, bias=True),   # tx, ty
+                conv1x1(last_dim, 1, bias=True)    # tz
             ])
             for m in self.final_layers:
                 nn.init.constant_(m.weight, 0.)
@@ -111,12 +117,12 @@ class RecogNetWrapper(nn.Module):
         if pretrained_path:
             state_dict = torch.load(pretrained_path, map_location='cpu')
             net.load_state_dict(state_dict)
-            print("loading pretrained net_recog %s from %s" %(net_recog, pretrained_path))
+            print("loading pretrained net_recog %s from %s" % (net_recog, pretrained_path))
         for param in net.parameters():
             param.requires_grad = False
         self.net = net
         self.preprocess = lambda x: 2 * x - 1
-        self.input_size=input_size
+        self.input_size = input_size
         
     def forward(self, image, M):
         image = self.preprocess(resize_n_crop(image, M, self.input_size))
@@ -315,8 +321,6 @@ class ResNet(nn.Module):
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-
-
 
         # Zero-initialize the last BN in each residual branch,
         # so that the residual branch starts with zeros, and each residual block behaves like an identity.

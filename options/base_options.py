@@ -129,7 +129,6 @@ class BaseOptions():
             suffix = ('_' + opt.suffix.format(**vars(opt))) if opt.suffix != '' else ''
             opt.name = opt.name + suffix
 
-
         # set gpu ids
         str_ids = opt.gpu_ids.split(',')
         gpu_ids = []
@@ -152,7 +151,7 @@ class BaseOptions():
             if os.path.isdir(model_dir):
                 model_pths = [i for i in os.listdir(model_dir) if i.endswith('pth')]
                 if os.path.isdir(model_dir) and len(model_pths) != 0:
-                    opt.continue_train= True
+                    opt.continue_train = True
         
             # update the latest epoch count
             if opt.continue_train:
@@ -162,7 +161,6 @@ class BaseOptions():
                         opt.epoch_count = max(epoch_counts) + 1
                 else:
                     opt.epoch_count = int(opt.epoch) + 1
-                    
 
         self.print_options(opt)
         self.opt = opt
