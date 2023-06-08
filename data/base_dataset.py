@@ -74,6 +74,7 @@ def get_transform(grayscale=False):
     transform_list += [transforms.ToTensor()]
     return transforms.Compose(transform_list)
 
+
 def get_affine_mat(opt, size):
     shift_x, shift_y, scale, rot_angle, flip = 0., 0., 1., 0., False
     w, h = size
@@ -101,8 +102,10 @@ def get_affine_mat(opt, size):
     affine_inv = np.linalg.inv(affine)
     return affine, affine_inv, flip
 
+
 def apply_img_affine(img, affine_inv, method=RESAMPLING_METHOD):
     return img.transform(img.size, Image.AFFINE, data=affine_inv.flatten()[:6], resample=RESAMPLING_METHOD)
+
 
 def apply_lm_affine(landmark, affine, flip, size):
     _, h = size

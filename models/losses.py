@@ -4,18 +4,21 @@ import torch.nn as nn
 from kornia.geometry import warp_affine
 import torch.nn.functional as F
 
+
 def resize_n_crop(image, M, dsize=112):
     # image: (b, c, h, w)
     # M   :  (b, 2, 3)
     return warp_affine(image, M, dsize=(dsize, dsize))
 
-### perceptual level loss
+
+# perceptual level loss
 class PerceptualLoss(nn.Module):
     def __init__(self, recog_net, input_size=112):
         super(PerceptualLoss, self).__init__()
         self.recog_net = recog_net
         self.preprocess = lambda x: 2 * x - 1
-        self.input_size=input_size
+        self.input_size = input_size
+        
     def forward(imageA, imageB, M):
         """
         1 - cosine distance
@@ -36,12 +39,14 @@ class PerceptualLoss(nn.Module):
         # assert torch.sum((cosine_d > 1).float()) == 0
         return torch.sum(1 - cosine_d) / cosine_d.shape[0]        
 
+
 def perceptual_loss(id_featureA, id_featureB):
     cosine_d = torch.sum(id_featureA * id_featureB, dim=-1)
-        # assert torch.sum((cosine_d > 1).float()) == 0
+    # assert torch.sum((cosine_d > 1).float()) == 0
     return torch.sum(1 - cosine_d) / cosine_d.shape[0]  
 
-### image level loss
+
+# image level loss
 def photo_loss(imageA, imageB, mask, eps=1e-6):
     """
     l2 norm (with sqrt, to ensure backward stabililty, use eps, otherwise Nan may occur)
@@ -52,6 +57,7 @@ def photo_loss(imageA, imageB, mask, eps=1e-6):
     loss = torch.sqrt(eps + torch.sum((imageA - imageB) ** 2, dim=1, keepdims=True)) * mask
     loss = torch.sum(loss) / torch.max(torch.sum(mask), torch.tensor(1.0).to(mask.device))
     return loss
+
 
 def landmark_loss(predict_lm, gt_lm, weight=None):
     """
@@ -72,7 +78,7 @@ def landmark_loss(predict_lm, gt_lm, weight=None):
     return loss
 
 
-### regulization
+# regulization
 def reg_loss(coeffs_dict, opt=None):
     """
     l2 norm without the sqrt, from yu's implementation (mse)
@@ -98,6 +104,7 @@ def reg_loss(coeffs_dict, opt=None):
 
     return creg_loss, gamma_loss
 
+
 def reflectance_loss(texture, mask):
     """
     minimize texture variance (mse), albedo regularization to ensure an uniform skin albedo
@@ -110,4 +117,3 @@ def reflectance_loss(texture, mask):
     texture_mean = torch.sum(mask * texture, dim=1, keepdims=True) / torch.sum(mask)
     loss = torch.sum(((texture - texture_mean) * mask)**2) / (texture.shape[0] * torch.sum(mask))
     return loss
-

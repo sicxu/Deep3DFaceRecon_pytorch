@@ -28,10 +28,12 @@ def default_flist_reader(flist):
 
     return imlist
 
+
 def jason_flist_reader(flist):
     with open(flist, 'r') as fp:
         info = json.load(fp)
     return info
+
 
 def parse_label(label):
     return torch.tensor(np.array(label).astype(np.float32))
@@ -62,7 +64,6 @@ class FlistDataset(BaseDataset):
         self.name = 'train' if opt.isTrain else 'val'
         if '_' in opt.flist:
             self.name += '_' + opt.flist.split(os.sep)[-1].split('_')[0]
-        
 
     def __getitem__(self, index):
         """Return a data point and its metadata information.
@@ -99,7 +100,6 @@ class FlistDataset(BaseDataset):
         lm_tensor = parse_label(lm)
         M_tensor = parse_label(M)
 
-
         return {'imgs': img_tensor, 
                 'lms': lm_tensor, 
                 'msks': msk_tensor, 
@@ -115,9 +115,6 @@ class FlistDataset(BaseDataset):
         if msk is not None:
             msk = apply_img_affine(msk, affine_inv, method=Image.BILINEAR)
         return img, lm, msk
-    
-
-
 
     def __len__(self):
         """Return the total number of images in the dataset.

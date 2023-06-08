@@ -2,11 +2,12 @@
 """
 
 import numpy as np
-import  torch
+import torch
 import torch.nn.functional as F
 from scipy.io import loadmat
 from util.load_mats import transferBFM09
 import os
+
 
 def perspective_projection(focal, center):
     # return p.T (N, 3) @ (3, 3) 
@@ -16,25 +17,25 @@ def perspective_projection(focal, center):
         0, 0, 1
     ]).reshape([3, 3]).astype(np.float32).transpose()
 
+
 class SH:
     def __init__(self):
         self.a = [np.pi, 2 * np.pi / np.sqrt(3.), 2 * np.pi / np.sqrt(8.)]
         self.c = [1/np.sqrt(4 * np.pi), np.sqrt(3.) / np.sqrt(4 * np.pi), 3 * np.sqrt(5.) / np.sqrt(12 * np.pi)]
 
 
-
 class ParametricFaceModel:
     def __init__(self, 
-                bfm_folder='./BFM', 
-                recenter=True,
-                camera_distance=10.,
-                init_lit=np.array([
+                 bfm_folder='./BFM',
+                 recenter=True,
+                 camera_distance=10.,
+                 init_lit=np.array([
                     0.8, 0, 0, 0, 0, 0, 0, 0, 0
                     ]),
-                focal=1015.,
-                center=112.,
-                is_train=True,
-                default_name='BFM_model_front.mat'):
+                 focal=1015.,
+                 center=112.,
+                 is_train=True,
+                 default_name='BFM_model_front.mat'):
         
         if not os.path.isfile(os.path.join(bfm_folder, default_name)):
             transferBFM09(bfm_folder)
@@ -74,7 +75,6 @@ class ParametricFaceModel:
         self.camera_distance = camera_distance
         self.SH = SH()
         self.init_lit = init_lit.reshape([1, 1, -1]).astype(np.float32)
-        
 
     def to(self, device):
         self.device = device
@@ -82,7 +82,6 @@ class ParametricFaceModel:
             if type(value).__module__ == np.__name__:
                 setattr(self, key, torch.tensor(value).to(device))
 
-    
     def compute_shape(self, id_coeff, exp_coeff):
         """
         Return:
@@ -97,7 +96,6 @@ class ParametricFaceModel:
         exp_part = torch.einsum('ij,aj->ai', self.exp_base, exp_coeff)
         face_shape = id_part + exp_part + self.mean_shape.reshape([1, -1])
         return face_shape.reshape([batch_size, -1, 3])
-    
 
     def compute_texture(self, tex_coeff, normalize=True):
         """
@@ -112,7 +110,6 @@ class ParametricFaceModel:
         if normalize:
             face_texture = face_texture / 255.
         return face_texture.reshape([batch_size, -1, 3])
-
 
     def compute_norm(self, face_shape):
         """
@@ -135,7 +132,6 @@ class ParametricFaceModel:
         vertex_norm = torch.sum(face_norm[:, self.point_buf], dim=2)
         vertex_norm = F.normalize(vertex_norm, dim=-1, p=2)
         return vertex_norm
-
 
     def compute_color(self, face_texture, face_norm, gamma):
         """
@@ -170,7 +166,6 @@ class ParametricFaceModel:
         face_color = torch.cat([r, g, b], dim=-1) * face_texture
         return face_color
 
-    
     def compute_rotation(self, angles):
         """
         Return:
@@ -206,7 +201,6 @@ class ParametricFaceModel:
         rot = rot_z @ rot_y @ rot_x
         return rot.permute(0, 2, 1)
 
-
     def to_camera(self, face_shape):
         face_shape[..., -1] = self.camera_distance - face_shape[..., -1]
         return face_shape
@@ -225,7 +219,6 @@ class ParametricFaceModel:
 
         return face_proj
 
-
     def transform(self, face_shape, rot, trans):
         """
         Return:
@@ -237,7 +230,6 @@ class ParametricFaceModel:
             trans            -- torch.tensor, size (B, 3)
         """
         return face_shape @ rot + trans.unsqueeze(1)
-
 
     def get_landmarks(self, face_proj):
         """
@@ -271,6 +263,7 @@ class ParametricFaceModel:
             'gamma': gammas,
             'trans': translations
         }
+
     def compute_for_render(self, coeffs):
         """
         Return:
@@ -283,7 +276,6 @@ class ParametricFaceModel:
         coef_dict = self.split_coeff(coeffs)
         face_shape = self.compute_shape(coef_dict['id'], coef_dict['exp'])
         rotation = self.compute_rotation(coef_dict['angle'])
-
 
         face_shape_transformed = self.transform(face_shape, rotation, coef_dict['trans'])
         face_vertex = self.to_camera(face_shape_transformed)

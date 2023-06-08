@@ -4,6 +4,7 @@
 from .base_options import BaseOptions
 from util import util
 
+
 class TrainOptions(BaseOptions):
     """This class includes training options.
 
@@ -27,7 +28,6 @@ class TrainOptions(BaseOptions):
         # for val
         parser.add_argument('--flist_val', type=str, default='datalist/val/masks.txt', help='list of mask names of val set')
         parser.add_argument('--batch_size_val', type=int, default=32)
-
 
         # visualization parameters
         parser.add_argument('--display_freq', type=int, default=1000, help='frequency of showing training results on screen')

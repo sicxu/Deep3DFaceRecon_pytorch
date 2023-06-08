@@ -21,8 +21,10 @@ def setup(rank, world_size, port):
     # initialize the process group
     dist.init_process_group("gloo", rank=rank, world_size=world_size)
 
+
 def cleanup():
     dist.destroy_process_group()
+
 
 def main(rank, world_size, train_opt):
     val_opt = genvalconf(train_opt, isTrain=False)
@@ -45,7 +47,7 @@ def main(rank, world_size, train_opt):
 
     if rank == 0:
         print('The batch number of training images = %d\n, \
-            the batch number of validation images = %d'% (train_dataset_batches, val_dataset_batches))
+            the batch number of validation images = %d' % (train_dataset_batches, val_dataset_batches))
         model.print_networks(train_opt.verbose)
         visualizer = MyVisualizer(train_opt)   # create a visualizer that display/save images and plots
 
@@ -123,7 +125,7 @@ def main(rank, world_size, train_opt):
                     eval_time = time.time() - val_start_time
                     
                     if rank == 0:
-                        visualizer.print_current_losses(epoch, epoch_iter, losses_avg, eval_time, t_data, dataset='val') # visualize training results
+                        visualizer.print_current_losses(epoch, epoch_iter, losses_avg, eval_time, t_data, dataset='val')  # visualize training results
                         visualizer.plot_current_losses(total_iters, losses_avg, dataset='val')
                 model.train()      
 
@@ -151,6 +153,7 @@ def main(rank, world_size, train_opt):
 
         if use_ddp:
             dist.barrier()
+
 
 if __name__ == '__main__':
 
