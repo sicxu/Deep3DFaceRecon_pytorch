@@ -96,7 +96,7 @@ source activate deep3d_pytorch
 
 2. Install Nvdiffrast library:
 ```
-git clone https://github.com/NVlabs/nvdiffrast
+git clone -b 0.3.0 https://github.com/NVlabs/nvdiffrast
 cd nvdiffrast    # ./Deep3DFaceRecon_pytorch/nvdiffrast
 pip install .
 ```
