@@ -3,8 +3,9 @@
 
 import os
 
+
 # save path to training data
-def write_list(lms_list, imgs_list, msks_list, mode='train',save_folder='datalist', save_name=''):
+def write_list(lms_list, imgs_list, msks_list, mode='train', save_folder='datalist', save_name=''):
     save_path = os.path.join(save_folder, mode)
     if not os.path.isdir(save_path):
         os.makedirs(save_path)
@@ -16,6 +17,7 @@ def write_list(lms_list, imgs_list, msks_list, mode='train',save_folder='datalis
 
     with open(os.path.join(save_path, save_name + 'masks.txt'), 'w') as fd:
         fd.writelines([i + '\n' for i in msks_list])   
+
 
 # check if the path is valid
 def check_list(rlms_list, rimgs_list, rmsks_list):

@@ -10,6 +10,7 @@ from . import util, html
 from subprocess import Popen, PIPE
 from torch.utils.tensorboard import SummaryWriter
 
+
 def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
     """Save images to the disk.
 
@@ -41,7 +42,7 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
     webpage.add_images(ims, txts, links, width=width)
 
 
-class Visualizer():
+class Visualizer:
     """This class includes several functions that can display/save images and print/save logging information.
 
     It uses a Python library tensprboardX for display, and a Python library 'dominate' (wrapped in 'HTML') for creating HTML files with images.
@@ -77,7 +78,6 @@ class Visualizer():
     def reset(self):
         """Reset the self.saved status"""
         self.saved = False
-
 
     def display_current_results(self, visuals, total_iters, epoch, save_result):
         """Display current results on tensorboad; save current results to an HTML file.
@@ -170,9 +170,8 @@ class MyVisualizer:
                 now = time.strftime("%c")
                 log_file.write('================ Training Loss (%s) ================\n' % now)
 
-
     def display_current_results(self, visuals, total_iters, epoch, dataset='train', save_results=False, count=0, name=None,
-            add_image=True):
+                                add_image=True):
         """Display current results on tensorboad; save current results to an HTML file.
 
         Parameters:
@@ -187,11 +186,11 @@ class MyVisualizer:
             for i in range(image.shape[0]):
                 image_numpy = util.tensor2im(image[i])
                 if add_image:
-                    self.writer.add_image(label + '%s_%02d'%(dataset, i + count),
-                            image_numpy, total_iters, dataformats='HWC')
+                    self.writer.add_image(label + '%s_%02d' % (dataset, i + count),
+                                          image_numpy, total_iters, dataformats='HWC')
 
                 if save_results:
-                    save_path = os.path.join(self.img_dir, dataset, 'epoch_%s_%06d'%(epoch, total_iters))
+                    save_path = os.path.join(self.img_dir, dataset, 'epoch_%s_%06d' % (epoch, total_iters))
                     if not os.path.isdir(save_path):
                         os.makedirs(save_path)
 
@@ -201,10 +200,9 @@ class MyVisualizer:
                         img_path = os.path.join(save_path, '%s_%03d.png' % (label, i + count))
                     util.save_image(image_numpy, img_path)
 
-
     def plot_current_losses(self, total_iters, losses, dataset='train'):
         for name, value in losses.items():
-            self.writer.add_scalar(name + '/%s'%dataset, value, total_iters)
+            self.writer.add_scalar(name + '/%s' % dataset, value, total_iters)
 
     # losses: same format as |losses| of plot_current_losses
     def print_current_losses(self, epoch, iters, losses, t_comp, t_data, dataset='train'):

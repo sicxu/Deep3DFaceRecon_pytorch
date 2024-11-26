@@ -7,12 +7,13 @@ from .base_model import BaseModel
 from . import networks
 from .bfm import ParametricFaceModel
 from .losses import perceptual_loss, photo_loss, reg_loss, reflectance_loss, landmark_loss
-from util import util 
+from util import util
 from util.nvdiffrast import MeshRenderer
 from util.preprocess import estimate_norm_torch
 
 import trimesh
 from scipy.io import savemat
+
 
 class FaceReconModel(BaseModel):
 
@@ -42,7 +43,6 @@ class FaceReconModel(BaseModel):
             parser.add_argument('--use_crop_face', type=util.str2bool, nargs='?', const=True, default=False, help='use crop mask for photo loss')
             parser.add_argument('--use_predef_M', type=util.str2bool, nargs='?', const=True, default=False, help='use predefined M for predicted face')
 
-            
             # augmentation parameters
             parser.add_argument('--shift_pixs', type=float, default=10., help='shift pixels')
             parser.add_argument('--scale_delta', type=float, default=0.1, help='delta scale factor')
@@ -58,8 +58,6 @@ class FaceReconModel(BaseModel):
             parser.add_argument('--w_gamma', type=float, default=10.0, help='weight for gamma loss')
             parser.add_argument('--w_lm', type=float, default=1.6e-3, help='weight for lm loss')
             parser.add_argument('--w_reflc', type=float, default=5.0, help='weight for reflc loss')
-
-
 
         opt, _ = parser.parse_known_args()
         parser.set_defaults(
@@ -125,9 +123,9 @@ class FaceReconModel(BaseModel):
         Parameters:
             input: a dictionary that contains the data itself and its metadata information.
         """
-        self.input_img = input['imgs'].to(self.device) 
+        self.input_img = input['imgs'].to(self.device)
         self.atten_mask = input['msks'].to(self.device) if 'msks' in input else None
-        self.gt_lm = input['lms'].to(self.device)  if 'lms' in input else None
+        self.gt_lm = input['lms'].to(self.device) if 'lms' in input else None
         self.trans_m = input['M'].to(self.device) if 'M' in input else None
         self.image_paths = input['im_paths'] if 'im_paths' in input else None
 
@@ -141,11 +139,10 @@ class FaceReconModel(BaseModel):
         
         self.pred_coeffs_dict = self.facemodel.split_coeff(output_coeff)
 
-
     def compute_losses(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
 
-        assert self.net_recog.training == False
+        assert not self.net_recog.training
         trans_m = self.trans_m
         if not self.opt.use_predef_M:
             trans_m = estimate_norm_torch(self.pred_lm, self.input_img.shape[-2])
@@ -172,16 +169,15 @@ class FaceReconModel(BaseModel):
 
         self.loss_all = self.loss_feat + self.loss_color + self.loss_reg + self.loss_gamma \
                         + self.loss_lm + self.loss_reflc
-            
 
     def optimize_parameters(self, isTrain=True):
-        self.forward()               
+        self.forward()
         self.compute_losses()
         """Update network weights; it will be called in every training iteration."""
         if isTrain:
-            self.optimizer.zero_grad()  
-            self.loss_all.backward()         
-            self.optimizer.step()        
+            self.optimizer.zero_grad()
+            self.loss_all.backward()
+            self.optimizer.step()
 
     def compute_visuals(self):
         with torch.no_grad():
@@ -195,10 +191,10 @@ class FaceReconModel(BaseModel):
                 output_vis_numpy = util.draw_landmarks(output_vis_numpy_raw, gt_lm_numpy, 'b')
                 output_vis_numpy = util.draw_landmarks(output_vis_numpy, pred_lm_numpy, 'r')
             
-                output_vis_numpy = np.concatenate((input_img_numpy, 
+                output_vis_numpy = np.concatenate((input_img_numpy,
                                     output_vis_numpy_raw, output_vis_numpy), axis=-2)
             else:
-                output_vis_numpy = np.concatenate((input_img_numpy, 
+                output_vis_numpy = np.concatenate((input_img_numpy,
                                     output_vis_numpy_raw), axis=-2)
 
             self.output_vis = torch.tensor(
@@ -208,7 +204,7 @@ class FaceReconModel(BaseModel):
     def save_mesh(self, name):
 
         recon_shape = self.pred_vertex  # get reconstructed shape
-        recon_shape[..., -1] = 10 - recon_shape[..., -1] # from camera space to world space
+        recon_shape[..., -1] = 10 - recon_shape[..., -1]  # from camera space to world space
         recon_shape = recon_shape.cpu().numpy()[0]
         recon_color = self.pred_color
         recon_color = recon_color.cpu().numpy()[0]
@@ -216,13 +212,10 @@ class FaceReconModel(BaseModel):
         mesh = trimesh.Trimesh(vertices=recon_shape, faces=tri, vertex_colors=np.clip(255. * recon_color, 0, 255).astype(np.uint8), process=False)
         mesh.export(name)
 
-    def save_coeff(self,name):
+    def save_coeff(self, name):
 
-        pred_coeffs = {key:self.pred_coeffs_dict[key].cpu().numpy() for key in self.pred_coeffs_dict}
+        pred_coeffs = {key: self.pred_coeffs_dict[key].cpu().numpy() for key in self.pred_coeffs_dict}
         pred_lm = self.pred_lm.cpu().numpy()
-        pred_lm = np.stack([pred_lm[:,:,0],self.input_img.shape[2]-1-pred_lm[:,:,1]],axis=2) # transfer to image coordinate
+        pred_lm = np.stack([pred_lm[:, :, 0], self.input_img.shape[2]-1-pred_lm[:, :, 1]], axis=2)  # transfer to image coordinate
         pred_coeffs['lm68'] = pred_lm
-        savemat(name,pred_coeffs)
-
-
-
+        savemat(name, pred_coeffs)

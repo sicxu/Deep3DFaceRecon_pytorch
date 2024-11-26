@@ -7,6 +7,7 @@ from scipy.io import loadmat, savemat
 from array import array
 import os.path as osp
 
+
 # load expression basis
 def LoadExpBasis(bfm_folder='BFM'):
     n_vertex = 53215
@@ -114,4 +115,3 @@ def load_lm3d(bfm_folder):
     Lm3D = Lm3D[[1, 2, 0, 3, 4], :]
 
     return Lm3D
-
