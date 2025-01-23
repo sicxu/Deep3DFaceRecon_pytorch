@@ -28,6 +28,7 @@ class BaseOptions():
         """Define the common options that are used in both training and test."""
         # basic parameters
         parser.add_argument('--name', type=str, default='face_recon', help='name of the experiment. It decides where to store samples and models')
+        parser.add_argument('--device', type=str, default='cuda', help='device to run the model, [cuda | cpu | mps]')
         parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         parser.add_argument('--vis_batch_nums', type=float, default=1, help='batch nums of images for visulization')
@@ -40,6 +41,9 @@ class BaseOptions():
 
         # model parameters
         parser.add_argument('--model', type=str, default='facerecon', help='chooses which model to use.')
+
+        # renderer parameters
+        parser.add_argument('--renderer_type', type=str, default='nvdiffrast', help='chooses which renderer to use. [nvdiffrast | face3d | cpu | none], cpu=face3d')
 
         # additional parameters
         parser.add_argument('--epoch', type=str, default='latest', help='which epoch to load? set to latest to use latest cached model')

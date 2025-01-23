@@ -8,7 +8,6 @@ from . import networks
 from .bfm import ParametricFaceModel
 from .losses import perceptual_loss, photo_loss, reg_loss, reflectance_loss, landmark_loss
 from util import util 
-from util.nvdiffrast import MeshRenderer
 from util.preprocess import estimate_norm_torch
 
 import trimesh
@@ -85,7 +84,12 @@ class FaceReconModel(BaseModel):
         
         self.visual_names = ['output_vis']
         self.model_names = ['net_recon']
-        self.parallel_names = self.model_names + ['renderer']
+        self.renderer_type = opt.renderer_type
+
+        self.parallel_names = self.model_names
+
+        if opt.renderer_type == "nvdiffrast":
+            self.parallel_names.append('renderer')
 
         self.net_recon = networks.define_net_recon(
             net_recon=opt.net_recon, use_last_fc=opt.use_last_fc, init_path=opt.init_path
@@ -96,12 +100,28 @@ class FaceReconModel(BaseModel):
             is_train=self.isTrain, default_name=opt.bfm_model
         )
         
-        fov = 2 * np.arctan(opt.center / opt.focal) * 180 / np.pi
-        self.renderer = MeshRenderer(
-            rasterize_fov=fov, znear=opt.z_near, zfar=opt.z_far, rasterize_size=int(2 * opt.center), use_opengl=opt.use_opengl
-        )
+        if opt.renderer_type == "nvdiffrast":
+            from util.nvdiffrast import MeshRenderer
+
+            fov = 2 * np.arctan(opt.center / opt.focal) * 180 / np.pi
+            self.renderer = MeshRenderer(
+                rasterize_fov=fov, znear=opt.z_near, zfar=opt.z_far, rasterize_size=int(2 * opt.center), use_opengl=opt.use_opengl
+            )
+        elif opt.renderer_type == "face3d" or opt.renderer_type == "cpu":
+            from util.cpu_renderer import MeshRenderer_cpu as MeshRenderer
+
+            fov = 2 * np.arctan(opt.center / opt.focal) * 180 / np.pi
+            self.renderer = MeshRenderer(
+                rasterize_fov=fov, znear=opt.z_near, zfar=opt.z_far, rasterize_size=int(2 * opt.center)
+            )
+        else:
+            self.renderer = None
+
+        self.output_vis = None
 
         if self.isTrain:
+            assert self.renderer_type == "nvdiffrast", f"{self.cls.__name__} should be initialized with opt.renderer_type='nvdiffrast'"
+
             self.loss_names = ['all', 'feat', 'color', 'lm', 'reg', 'gamma', 'reflc']
 
             self.net_recog = networks.define_net_recog(
@@ -125,19 +145,30 @@ class FaceReconModel(BaseModel):
         Parameters:
             input: a dictionary that contains the data itself and its metadata information.
         """
-        self.input_img = input['imgs'].to(self.device) 
-        self.atten_mask = input['msks'].to(self.device) if 'msks' in input else None
-        self.gt_lm = input['lms'].to(self.device)  if 'lms' in input else None
-        self.trans_m = input['M'].to(self.device) if 'M' in input else None
-        self.image_paths = input['im_paths'] if 'im_paths' in input else None
+        if self.device.type == 'mps': # torch.mps is not supported for torch.float64
+            self.input_img = input['imgs'].to(dtype=torch.float32, device=self.device) 
+            self.atten_mask = input['msks'].to(dtype=torch.float32, device=self.device) if 'msks' in input else None
+            self.gt_lm = input['lms'].to(dtype=torch.float32, device=self.device)  if 'lms' in input else None
+            self.trans_m = input['M'].to(dtype=torch.float32, device=self.device) if 'M' in input else None
+            self.image_paths = input['im_paths'] if 'im_paths' in input else None
+        else:
+            self.input_img = input['imgs'].to(self.device) 
+            self.atten_mask = input['msks'].to(self.device) if 'msks' in input else None
+            self.gt_lm = input['lms'].to(self.device)  if 'lms' in input else None
+            self.trans_m = input['M'].to(self.device) if 'M' in input else None
+            self.image_paths = input['im_paths'] if 'im_paths' in input else None
 
-    def forward(self):
+    def forward(self, do_render=True):
+        if do_render:
+            assert self.renderer is not None, f"{self.cls.__name__} should be initialized with opt.renderer_type='nvdiffrast'"
         output_coeff = self.net_recon(self.input_img)
         self.facemodel.to(self.device)
         self.pred_vertex, self.pred_tex, self.pred_color, self.pred_lm = \
             self.facemodel.compute_for_render(output_coeff)
-        self.pred_mask, _, self.pred_face = self.renderer(
-            self.pred_vertex, self.facemodel.face_buf, feat=self.pred_color)
+
+        if do_render:
+            self.pred_mask, _, self.pred_face = self.renderer(
+                self.pred_vertex, self.facemodel.face_buf, feat=self.pred_color)[:3]
         
         self.pred_coeffs_dict = self.facemodel.split_coeff(output_coeff)
 
