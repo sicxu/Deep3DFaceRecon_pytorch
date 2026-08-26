@@ -1,0 +1,107 @@
+/debrato
+
+/checkpoints
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ============================================================
+# IDE / OS
+# ============================================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ============================================================
+# Deep3DFaceRecon model assets
+# Large / downloaded / generated files
+# ============================================================
+
+# Basel Face Model assets
+BFM/01_MorphableModel.mat
+BFM/Exp_Pca.bin
+BFM/BFM_model_front.mat
+
+# Other downloaded BFM archives
+*.tgz
+*.tar.gz
+
+# Pretrained checkpoints
+checkpoints/*/*.pth
+checkpoints/*/*.pt
+checkpoints/*/*.ckpt
+
+# Generated reconstruction results
+checkpoints/*/results/
+checkpoints/*/web/
+checkpoints/logs/
+
+# ============================================================
+# Local input images / personal data
+# ============================================================
+
+# Your own reconstruction inputs
+debrato/
+
+# Miscellaneous local download folders
+New folder/
+
+# ============================================================
+# nvdiffrast local source/build
+# ============================================================
+
+# We cloned nvdiffrast locally only for installation.
+# It is an external dependency, not part of this repository.
+nvdiffrast/
+
+# Native build artifacts
+build/
+dist/
+*.egg-info/
+*.egg-info
+
+# ============================================================
+# Generated / temporary data
+# ============================================================
+*.log
+*.tmp
+*.temp
+.cache/
+tmp/
+temp/
+
+# TensorBoard
+runs/
+events.out.tfevents.*
+
+
+# External YuNet weights
+assets/yunet/*.onnx
+
+# Local/download staging
+files_to_be_downloaded/
+
+# External ArcFace / InsightFace source
+insightface/
+models/arcface_torch/
+
+# YuNet model weights
+assets/yunet/*.onnx
